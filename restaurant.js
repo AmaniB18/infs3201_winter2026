@@ -5,17 +5,19 @@ const prompt=require('prompt-sync')()
  * Return a list of all employees loaded from the storage.
  * @returns {Array<{ employeeId: string, name: string, phone: string }>} List of employees
  */
+/*
 async function getAllEmployees() {
     let rawData = await fs.readFile('employees.json')
     result = JSON.parse(rawData)
     return result
-}
+}*/
 
 /**
  * Find a single employee given their ID number.
  * @param {string} empId 
  * @returns {{ employeeId: string, name: string, phone: string }|undefined}
  */
+/*
 async function findEmployee(empId) {
     let rawData = await fs.readFile('employees.json')
     employeeList = JSON.parse(rawData)
@@ -25,13 +27,13 @@ async function findEmployee(empId) {
         }
     }
     return undefined
-}
+}*/
 
 /**
  * Get a single shift given the shiftId
  * @param {string} shiftId 
  * @returns {{shiftId:string, date:string, startTime:string, endTime:string}|undefined}
- */
+ *//*
 async function findShift(shiftId) {
     let rawData = await fs.readFile('shifts.json')
     shiftList = JSON.parse(rawData)
@@ -41,13 +43,13 @@ async function findShift(shiftId) {
         }
     }
     return undefined
-}
+}*/
 
 /**
  * Get a list of shiftIDs for an employee.
  * @param {string} empId 
  * @returns {Array<{string}>}
- */
+ *//*
 async function getEmployeeShifts(empId) {
     let rawData = await fs.readFile('assignments.json')
     assignmentList = JSON.parse(rawData)
@@ -68,14 +70,14 @@ async function getEmployeeShifts(empId) {
     }
 
     return shiftDetails
-}
+}*/
 
 /**
  * Find a shift object give the employeeId and the shiftId.
  * @param {string} empId 
  * @param {string} shiftId 
  * @returns {{employeeId:string, shiftId:string}|undefined}
- */
+ *//*
 async function findAssignment(empId, shiftId) {
     let rawData = await fs.readFile('assignments.json')
     assignmentList = JSON.parse(rawData)
@@ -85,7 +87,7 @@ async function findAssignment(empId, shiftId) {
         }
     }
     return undefined
-}
+}*/
 
 /**
  * Record a new assignment of an employee to a shift. This functions does not
@@ -93,13 +95,13 @@ async function findAssignment(empId, shiftId) {
  * use assignShift instead to check for this.
  * @param {string} empId 
  * @param {string} shiftId 
- */
+ *//*
 async function addAssignment(empId, shiftId) {
     let rawData = await fs.readFile('assignments.json')
     assignmentList = JSON.parse(rawData)
     assignmentList.push({employeeId: empId, shiftId: shiftId})
     await fs.writeFile('assignments.json', JSON.stringify(assignmentList, null, 4))
-}
+}*/
 
 /**
  * Add a new employee record to the system. The empId is automatically generated based
@@ -133,7 +135,7 @@ async function addEmployeeRecord(emp) {
  * @param {string} empId 
  * @param {string} shiftId 
  * @returns {string} A message indicating the problem of the word "Ok"
- */
+ *//*
 async function assignShift(empId, shiftId) {
     // check that empId exists
     let employee = await findEmployee(empId)
@@ -153,12 +155,12 @@ async function assignShift(empId, shiftId) {
     // add empId,shiftId into the bridge
     await addAssignment(empId, shiftId)
     return "Ok"
-}
+}*/
 
 /**
  * A function to interact with the user and display the results of the
  * employee schedule in a CSV like format.
- */
+ *//*
 async function getEmployeeSchedule() {
     let empId = prompt('Enter employee ID: ')
     let details = await getEmployeeShifts(empId)
@@ -167,11 +169,11 @@ async function getEmployeeSchedule() {
     for (let d of details) {
         console.log(`${d.date},${d.startTime},${d.endTime}`)
     }
-}
+}*/
 
 /**
  * Display the employee list in a nicely formatted table.
- */
+ *//*
 async function displayEmployees() {
     let employees = await getAllEmployees()
     console.log('Employee ID  Name                Phone')
@@ -180,7 +182,7 @@ async function displayEmployees() {
         console.log(`${emp.employeeId.padEnd(13)}${emp.name.padEnd(20)}${emp.phone}`)
     }
 }
-
+*/
 /**
  * The UI function for adding a new employee to the system.
  */
