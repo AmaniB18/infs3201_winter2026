@@ -82,28 +82,6 @@ async function addAssignment(empId, shiftId) {
 }
 
 
-async function assignShift(empId, shiftId) {
-    // check that empId exists
-    let employee = await findEmployee(empId)
-    if (!employee) {
-        return "Employee does not exist"
-    }
-    // check that shiftId exists
-    let shift = await findShift(shiftId)
-    if (!shift) {
-        return "Shift does not exist"
-    }
-    // check that empId,shiftId doesn't exist
-    let assignment = await findAssignment(empId, shiftId)
-    if (assignment) {
-        return "Employee already assigned to shift"
-    }
-    // add empId,shiftId into the bridge
-    await addAssignment(empId, shiftId)
-    return "shift recorded"
-}
-
-
 async function getEmployeeSchedule(empId) {
     
     let details = await getEmployeeShifts(empId)
@@ -153,7 +131,6 @@ module.exports= {readData,
     getEmployeeShifts,
     findAssignment,
     addAssignment,
-    assignShift,
     getEmployeeSchedule,
     addNewEmployee,
 

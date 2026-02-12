@@ -15,7 +15,7 @@ async function displayMenu() {
         console.log('5. Exit')
         let choice = Number(prompt("What is your choice> "))
         if (choice === 1) {
-            employees = await business.getAllEmployees()
+            let employees = await business.getAllEmployees()
             console.log('Employee ID  Name                Phone')
             console.log('-----------  ------------------- ---------')
             for (let emp of employees) {
@@ -23,20 +23,20 @@ async function displayMenu() {
             }
             console.log('\n\n')
         }
-        else if (choice == 2) {
+        else if (choice === 2) {
             let name = prompt('Enter employee name: ')
             let phone = prompt('Enter phone number: ')
             await business.addNewEmployee(name, phone)
             console.log('employee added\n')
             console.log('\n\n')
         }
-        else if (choice == 3) {
+        else if (choice === 3) {
             let empId = prompt('Enter employee ID: ')
             let shiftId = prompt('Enter shift ID: ')
             let result =await business.assignShift(empId, shiftId)
             console.log(result + '\n')
         }
-        else if (choice == 4) {let empId = prompt('Enter employee ID: ')
+        else if (choice === 4) {let empId = prompt('Enter employee ID: ')
             let schedule = await business.getEmployeeSchedule(empId)
 
             if (schedule.length === 0) {
