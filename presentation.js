@@ -21,14 +21,13 @@ async function displayMenu() {
             for (let emp of employees) {
                 console.log(`${emp.employeeId.padEnd(13)}${emp.name.padEnd(20)}${emp.phone}`)
             }
-            console.log('\n\n')
+            console.log('\n')
         }
         else if (choice === 2) {
             let name = prompt('Enter employee name: ')
             let phone = prompt('Enter phone number: ')
             await business.addNewEmployee(name, phone)
             console.log('employee added\n')
-            console.log('\n\n')
         }
         else if (choice === 3) {
             let empId = prompt('Enter employee ID: ')
