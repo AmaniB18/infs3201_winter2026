@@ -5,8 +5,8 @@ const fs = require('fs/promises')
  * @returns {Array<{ employeeId: string, name: string, phone: string }>} List of employees
  */
 async function getAllEmployees() {
-    let rawData = await fs.readFile('employees.json')
-    result = JSON.parse(rawData)
+    const db = await getDb()
+    let result= await db.collection('employees').find({}).toArray()
     return result
 }
 
@@ -16,14 +16,10 @@ async function getAllEmployees() {
  * @returns {{ employeeId: string, name: string, phone: string }|undefined}
  */
 async function findEmployee(empId) {
-    let rawData = await fs.readFile('employees.json')
-    employeeList = JSON.parse(rawData)
-    for (let emp of employeeList) {
-        if (emp.employeeId === empId) {
-            return emp
-        }
-    }
-    return undefined
+    const db = await getDb()
+    let result= await db.collection('employees').findOne({ employeeId: empId })
+    return result
+    
 }
 
 /**
