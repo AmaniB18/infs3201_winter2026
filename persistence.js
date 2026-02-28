@@ -69,63 +69,10 @@ async function getEmployeeShifts(empId) {
     return shiftDetails
 }
 
-/**
- * Get a list of shiftIDs for an employee.
- * @param {string} empId 
- * @returns {Array<{string}>}
- */
-async function getEmployeeShiftsOnDate(empId, date) {
-    let rawData = await fs.readFile('assignments.json')
-    assignmentList = JSON.parse(rawData)
-    let shiftIds = []
-    for (let asn of assignmentList) {
-        if (asn.employeeId === empId) {
-            shiftIds.push(asn.shiftId)
-        }
-    }
 
-    rawData = await fs.readFile('shifts.json')
-    shiftList = JSON.parse(rawData)
-    let shiftDetails = []
-    for (let sh of shiftList) {
-        if (shiftIds.includes(sh.shiftId) && sh.date == date) {
-            shiftDetails.push(sh)
-        }
-    }
 
-    return shiftDetails
-}
 
-/**
- * Find a shift object give the employeeId and the shiftId.
- * @param {string} empId 
- * @param {string} shiftId 
- * @returns {{employeeId:string, shiftId:string}|undefined}
- */
-async function findAssignment(empId, shiftId) {
-    let rawData = await fs.readFile('assignments.json')
-    assignmentList = JSON.parse(rawData)
-    for (let asn of assignmentList) {
-        if (asn.employeeId === empId && asn.shiftId === shiftId) {
-            return asn
-        }
-    }
-    return undefined
-}
 
-/**
- * Record a new assignment of an employee to a shift. This functions does not
- * check for existing combinations so it is possible to double book an employee,
- * use assignShift instead to check for this.
- * @param {string} empId 
- * @param {string} shiftId 
- */
-async function addAssignment(empId, shiftId) {
-    let rawData = await fs.readFile('assignments.json')
-    assignmentList = JSON.parse(rawData)
-    assignmentList.push({employeeId: empId, shiftId: shiftId})
-    await fs.writeFile('assignments.json', JSON.stringify(assignmentList, null, 4))
-}
 
 /**
  * Add a new employee record to the system. The empId is automatically generated based
@@ -147,16 +94,10 @@ async function addEmployeeRecord(emp) {
     await fs.writeFile('employees.json', JSON.stringify(employeeList, null, 4))
 }
 
-async function getDailyMaxHours() {
-    let raw = await fs.readFile('config.json')
-    let configuration = JSON.parse(raw)
-    return configuration['maxDailyHours']
-}
+
 
 module.exports = {
     getAllEmployees, findEmployee,
     findShift, getEmployeeShifts,
-    findAssignment, addAssignment,
-    addEmployeeRecord,
-    getDailyMaxHours, getEmployeeShiftsOnDate
+    addEmployeeRecord
 }
