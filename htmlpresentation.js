@@ -46,6 +46,17 @@ app.get('/employee/:id', async (req, res) => {
     })
 })
 
+
+/**
+ * handles the root route and renders the employee list page.
+ * fetches all employees from the business layer and passes them
+ * to the employee_list handlebars template.
+ *
+ * @function handleRoot
+ * @param {Object} req - express request object
+ * @param {Object} res - express response object
+ * @returns {Promise<void>} resolves after the page is rendered
+ */
 async function handleRoot(req,res){
     let employees = await business.getAllEmployees()
 
@@ -53,6 +64,7 @@ async function handleRoot(req,res){
         employees: employees
     })
 }
+
 
 app.engine('handlebars', handlebars.engine(
     {defaultLayout: false,

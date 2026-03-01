@@ -49,7 +49,7 @@ async function findShift(shiftId) {
 /**
  * Get a list of shiftIDs for an employee.
  * @param {string} empId 
- * @returns {Array<{string}>}
+ * @returns {Array<{shiftId:string, date:string, startTime:string, endTime:string }>}
  */
 async function getEmployeeShifts(empId) {
     const db = await getDb()
