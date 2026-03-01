@@ -1,0 +1,20 @@
+<h1>{{employee.name}}</h1>
+<p>Name: {{employee.name}}</p>
+<p>Phone: {{employee.phone}}</p>
+<a href="/employee/{{employee.employeeId}}/edit">Edit Details</a>
+
+<h2>Shifts</h2>
+<table>
+  <tr><th>Date</th><th>Start Time</th><th>End Time</th></tr>
+  {{#each shifts}}
+    <tr>
+      <td>{{date}}</td>
+      <td class="{{#if (ltTime startTime "12:00")}}morning{{/if}}">{{startTime}}</td>
+      <td>{{endTime}}</td>
+    </tr>
+  {{/each}}
+</table>
+
+<style>
+  .morning { background-color: yellow; }
+</style>

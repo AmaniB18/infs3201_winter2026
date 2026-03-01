@@ -8,6 +8,9 @@ async function getAllEmployees() {
     return await persistence.getAllEmployees()
 }
 
+async function findEmployee(empId) {
+    return await persistence.findEmployee(empId)
+}
 
 /**
  * Get a list of shiftIDs for an employee.
@@ -32,5 +35,5 @@ async function addEmployeeRecord(emp) {
 
 
 module.exports = {
-    getAllEmployees, addEmployeeRecord, getEmployeeShifts
+    getAllEmployees, findEmployee, addEmployeeRecord, getEmployeeShifts
 }

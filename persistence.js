@@ -1,10 +1,10 @@
+require('dotenv').config()
 const { MongoClient } = require('mongodb')
-
 let client = undefined
 const dbName = 'infs3201_winter2026'
 async function connectDatabase(){
     if(!client){
-        client = new MongoClient('mongodb+srv://60305749:12class34@web2-60305749.uh9zwbj.mongodb.net/?appName=web2-60305749')
+        client = new MongoClient(process.env.MONGO_URI)
     }
     await client.connect()
 }
@@ -62,7 +62,7 @@ async function getEmployeeShifts(empId) {
             shiftDetails.push(shift)
         }
     }
-    
+
     return shiftDetails
 }
 
