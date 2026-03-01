@@ -1,5 +1,5 @@
 <h1>Edit {{employee.name}}</h1>
-<form method="POST">
+<form method="POST" action="/employee/edit/{{employee.employeeId}}">
   Name: <input type="text" name="name" value="{{employee.name}}" /><br/>
   Phone: <input type="text" name="phone" value="{{employee.phone}}" /><br/>
   <button type="submit">Save</button>

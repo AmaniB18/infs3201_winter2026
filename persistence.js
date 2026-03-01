@@ -94,5 +94,5 @@ async function addEmployeeRecord(emp) {
 module.exports = {
     getAllEmployees, findEmployee,
     findShift, getEmployeeShifts,
-    addEmployeeRecord
+    addEmployeeRecord, getDb
 }
