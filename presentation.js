@@ -1,20 +1,5 @@
 const business = require('./business.js')
 const prompt=require('prompt-sync')()
-const { MongoClient } = require('mongodb')
-
-let client = undefined
-
-async function connectDatabase(){
-    if(!client){
-        client = new MongoClient('mongodb+srv://60305749:12class34@web2-60305749.uh9zwbj.mongodb.net/?appName=web2-60305749')
-    }
-    await client.connect()
-}
-
-async function getDb() {
-    await connectDatabase()
-    return client.db(dbName)
-}
 
 /**
  * A function to interact with the user and display the results of the
@@ -76,16 +61,13 @@ async function displayMenu() {
             console.log('\n\n')
         }
         else if (choice == 3) {
-            await scheduleEmployee()
-            console.log('\n\n')
-        }
-        else if (choice == 4) {
             await getEmployeeSchedule()
             console.log('\n\n')
         }
-        else if (choice == 5) {
+        else if (choice == 4) {
             break
         }
+        
         else {
             console.log("Error in selection")
         }

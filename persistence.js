@@ -1,4 +1,18 @@
-const fs = require('fs/promises')
+const { MongoClient } = require('mongodb')
+
+let client = undefined
+const dbName = 'infs3201_winter2026'
+async function connectDatabase(){
+    if(!client){
+        client = new MongoClient('mongodb+srv://60305749:12class34@web2-60305749.uh9zwbj.mongodb.net/?appName=web2-60305749')
+    }
+    await client.connect()
+}
+
+async function getDb() {
+    await connectDatabase()
+    return client.db(dbName)
+}
 
 /**
  * Return a list of all employees loaded from the storage.
@@ -28,14 +42,8 @@ async function findEmployee(empId) {
  * @returns {{shiftId:string, date:string, startTime:string, endTime:string}|undefined}
  */
 async function findShift(shiftId) {
-    let rawData = await fs.readFile('shifts.json')
-    shiftList = JSON.parse(rawData)
-    for (let shift of shiftList) {
-        if (shift.shiftId == shiftId) {
-            return shift
-        }
-    }
-    return undefined
+    const db = await getDb()
+    return await db.collection('shifts').findOne({ shiftId: shiftId })
 }
 
 /**
@@ -44,24 +52,17 @@ async function findShift(shiftId) {
  * @returns {Array<{string}>}
  */
 async function getEmployeeShifts(empId) {
-    let rawData = await fs.readFile('assignments.json')
-    assignmentList = JSON.parse(rawData)
-    let shiftIds = []
-    for (let asn of assignmentList) {
-        if (asn.employeeId == empId) {
-            shiftIds.push(asn.shiftId)
-        }
-    }
+    const db = await getDb()
+    let assignments = await db.collection('assignments').find({ employeeId: empId }).toArray()
 
-    rawData = await fs.readFile('shifts.json')
-    shiftList = JSON.parse(rawData)
     let shiftDetails = []
-    for (let sh of shiftList) {
-        if (shiftIds.includes(sh.shiftId)) {
-            shiftDetails.push(sh)
+    for (let a of assignments) {
+        let shift = await db.collection('shifts').findOne({shiftId: a.shiftId})
+        if (shift){
+            shiftDetails.push(shift)
         }
     }
-
+    
     return shiftDetails
 }
 
@@ -76,18 +77,16 @@ async function getEmployeeShifts(empId) {
  * @param {{name:string, phone:string}} emp 
  */
 async function addEmployeeRecord(emp) {
+    const db = await getDb()
+    let employees = await db.collection('employees').find({}).toArray()
     let maxId = 0
-    let rawData = await fs.readFile('employees.json')
-    let employeeList = JSON.parse(rawData)
-    for (let e of employeeList) {
-        let eid = Number(e.employeeId.slice(1))
-        if (eid > maxId) {
-            maxId = eid
-        }
+    for (let e of employees) {
+        let num = Number(e.employeeId.slice(1))
+        if (num > maxId) maxId = num
     }
     emp.employeeId = `E${String(maxId+1).padStart(3,'0')}`
-    employeeList.push(emp)
-    await fs.writeFile('employees.json', JSON.stringify(employeeList, null, 4))
+    await db.collection('employees').insertOne(emp)
+
 }
 
 
