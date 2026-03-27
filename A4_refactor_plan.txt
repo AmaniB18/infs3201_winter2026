@@ -1,0 +1,23 @@
+Collections that will change:
+- shifts: will embed employees array of ObjectIds
+- employees: remove employeeId field
+- assignments: will be removed completely
+
+Persistence functions to modify/remove:
+- remove createAssignment()
+- remove getAssignments() 
+- any function using shiftId or employeeId should be updated to _id
+- shift functions must handle embedded employees array
+
+Business logic changes:
+- assigning employee to shift now updates shift.employees array
+- removing assignment now removes ObjectId from the array
+
+Embedded arrays:
+- updates will use $push and $pull instead of inserting into assignments collection
+- shifts now contain employee references directly
+
+Risks:
+- incorrect ObjectId conversion may break queries
+- forgetting to update all shiftId/employeeId 
+- duplicate employees in shift array
