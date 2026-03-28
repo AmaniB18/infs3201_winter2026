@@ -2,6 +2,7 @@ const express = require('express')
 const business = require('./business.js')
 const bodyParser= require('body-parser')
 const handlebars = require('express-handlebars')
+const {ObjectId} = require('mongodb');
 app = express()
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -26,8 +27,8 @@ app.post('/employee/edit/:id', async (req,res)=>{
 
     const db = await require('./persistence.js').getDb()
     await db.collection('employees').updateOne(
-        { employeeId: req.params.id },
-        { $set: { name: trimmedName, phone: trimmedPhone } }
+        {_id: new ObjectId(req.params.id)},
+        {$set: { name: trimmedName, phone: trimmedPhone}}
     )
 
     
