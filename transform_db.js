@@ -10,9 +10,6 @@ async function connectDatabase(){
     return client.db(dbName)
 }
 
-
-
-
 async function addEmployeesArray(shifts) {
     const allShifts = await shifts.find({}).toArray();
     for (let i = 0; i < allShifts.length; i++) {
@@ -22,10 +19,27 @@ async function addEmployeesArray(shifts) {
         ); }
 }
 
+async function embedEmployees(shifts, assignments, employees) {
+    const allAssignments = await assignments.find({}).toArray();
+    for (let i = 0; i < allAssignments.length; i++) {
+        let assignment = allAssignments[i];
+
+        let emp = await employees.findOne({ employeeId: assignment.employeeId });
+        let shift = await shifts.findOne({ shiftId: assignment.shiftId });
+        if (emp && shift) {
+            await shifts.updateOne(
+                { _id: shift._id },
+                { $push: { employees: emp._id } }
+            );
+        }}
+}
 async function run() {
     const db = await connectDatabase();
     const shifts = db.collection("shifts");
+    const assignments = db.collection("assignments");
+    const employees = db.collection("employees");
     await addEmployeesArray(shifts);
+    await embedEmployees(shifts, assignments, employees);
 }
 
 run();
