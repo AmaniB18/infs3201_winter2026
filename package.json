@@ -17,6 +17,7 @@
     "express-handlebars": "^8.0.6",
     "handlebars": "^4.7.8",
     "mongodb": "^7.1.0",
+    "package": "^1.0.1",
     "prompt-sync": "^4.2.0"
   }
 }
