@@ -37,7 +37,7 @@ app.post('/login', async (req, res) => {
         username,
         expires: Date.now() + 5 * 60 * 1000
     }
-    res.cookie("sessionId", sessionId)
+    res.cookie("sessionId", sessionId, {maxAge: 5 * 60 * 1000})
     res.redirect("/")
 })
 
@@ -65,24 +65,31 @@ function auth(req, res, next) {
     next()
 }
 
-app.use((req, res, next) => {
-    if (req.path === '/login' || req.path === '/logout') {
-        return next()
-    }
-    auth(req, res, next)
-})
+
 
 app.use(async (req, res, next) => {
     const db = await require('./persistence.js').getDb()
+    const sessionId = req.cookies.sessionId
+    let username = 'guest'
+    if (sessionId && sessions[sessionId]) {
+        username = sessions[sessionId].username
+    }
     await db.collection('security_log').insertOne({
         timestamp: new Date(),
-        username: req.user || 'guest',
+        username: username,
         url: req.url,
         method: req.method
     })
     next()
 })
 
+
+app.use((req, res, next) => {
+    if (req.path === '/login' || req.path === '/logout') {
+        return next()
+    }
+    auth(req, res, next)
+})
 
 
 app.get('/employee/edit/:id', async (req,res)=>{
