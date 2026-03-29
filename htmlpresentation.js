@@ -48,10 +48,17 @@ app.get('/logout', (req, res) => {
     res.redirect('/login')
 })
 
+/**
+ * Middleware that enforces authentication.
+ * Validates session existence and expiry, and implements expiration.
+ * Redirects unauthenticated users to login.
+ * @param {Object} req
+ * @param {Object} res
+ */
 function auth(req, res, next) {
     const sessionId = req.cookies.sessionId
     if (!sessionId || !sessions[sessionId]) {
-        if (req.path === '/') {
+        if (req.path === '/'){
             return res.redirect('/login')
         }
         return res.redirect('/login?error=Please login first')
@@ -61,12 +68,19 @@ function auth(req, res, next) {
         return res.redirect('/login?error=Session expired')
     }
     sessions[sessionId].expires = Date.now() + 5 * 60 * 1000
+    res.cookie("sessionId", sessionId, {maxAge: 5 * 60 * 1000})
     req.user = sessions[sessionId].username
     next()
 }
 
 
-
+/**
+ * Middleware that logs all incoming requests to the security_log collection.
+ * Records timestamp, username, URL, and HTTP method.
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Function} next
+ */
 app.use(async (req, res, next) => {
     const db = await require('./persistence.js').getDb()
     const sessionId = req.cookies.sessionId

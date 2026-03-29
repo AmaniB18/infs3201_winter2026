@@ -2,12 +2,17 @@ const persistence = require('./persistence.js')
 
 /**
  * Return a list of all employees loaded from the storage.
- * @returns {Array<{ employeeId: string, name: string, phone: string }>} List of employees
+ * @returns {Array<{_id: ObjectId, name: string, phone: string }>} List of employees
  */
 async function getAllEmployees() {
     return await persistence.getAllEmployees()
 }
 
+/**
+ * Finds an employee by their ObjectId.
+ * @param {string} empId - The employee's ObjectId as a string.
+ * @returns {Promise<{ _id: ObjectId, name: string, phone: string } | undefined>}
+ */
 async function findEmployee(empId) {
     return await persistence.findEmployee(empId)
 }
@@ -15,7 +20,7 @@ async function findEmployee(empId) {
 /**
  * Get a list of shiftIDs for an employee.
  * @param {string} empId 
- * @returns {Array<{string}>}
+ * @returns {Array<{ _id: ObjectId, date: string, startTime: string, endTime: string, employees: ObjectId[] }>}
  */
 async function getEmployeeShifts(empId) {
     return await persistence.getEmployeeShifts(empId)
@@ -23,8 +28,7 @@ async function getEmployeeShifts(empId) {
 
 
 /**
- * Add a new employee record to the system. The empId is automatically generated based
- * on the next available ID number from what is already in the file.
+ * Add a new employee record to the system. The _id is automatically generated 
  * @param {{name:string, phone:string}} emp 
  */
 async function addEmployeeRecord(emp) {
