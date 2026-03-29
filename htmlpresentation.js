@@ -29,7 +29,7 @@ app.post('/login', async (req, res) => {
     const db = await require('./persistence.js').getDb()
     const user = await db.collection("users").findOne({ username })
     if (!user || user.password !== hashPassword(password)) {
-        return res.redirect("/login?error=Invalid. Try again: ")
+        return res.redirect("/login?error=Invalid credentials")
     }
     const sessionId = crypto.randomBytes(16).toString("hex")
 
@@ -51,9 +51,11 @@ app.get('/logout', (req, res) => {
 function auth(req, res, next) {
     const sessionId = req.cookies.sessionId
     if (!sessionId || !sessions[sessionId]) {
-        //return res.redirect('/login?error=Please login first')
-        return res.redirect('/login')
-    }
+        if (req.path === '/') {
+            return res.redirect('/login')
+        }
+        return res.redirect('/login?error=Please login first')
+}
     if (sessions[sessionId].expires < Date.now()) {
         delete sessions[sessionId]
         return res.redirect('/login?error=Session expired')
