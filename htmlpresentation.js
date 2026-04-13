@@ -7,12 +7,18 @@ const handlebars = require('express-handlebars')
 const {ObjectId} = require('mongodb');
 const crypto = require('crypto')
 const cookieParser = require('cookie-parser')
+
+const emailSystem = require('./emailSystem.js')
+
 app = express()
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 
 let sessions = {}
+
+let twoFACodes = {}
+let loginAttempts = {}
 
 function hashPassword(password) {
     return crypto.createHash('sha256').update(password).digest('hex')
@@ -22,22 +28,82 @@ app.get('/login', (req, res) => {
 })
 
 
-
 app.post('/login', async (req, res) => {
     const { username, password } = req.body
 
     const db = await require('./persistence.js').getDb()
     const user = await db.collection("users").findOne({ username })
+
+    if (!loginAttempts[username]) {
+        loginAttempts[username] = 0
+    }
+
     if (!user || user.password !== hashPassword(password)) {
+        loginAttempts[username]++
+
+        if (loginAttempts[username] === 3) {
+            emailSystem.sendEmail(username, "Suspicious Activity", "3 failed login attempts detected.")
+        }
+
+        if (loginAttempts[username] >= 10) {
+            await db.collection("users").updateOne(
+                { username },
+                { $set: { locked: true } }
+            )
+            return res.send("Account locked")
+        }
+
         return res.redirect("/login?error=Invalid credentials")
     }
+
+    if (user.locked) {
+        return res.send("Account is locked")
+    }
+
+   
+    loginAttempts[username] = 0
+
+  
+    const code = Math.floor(100000 + Math.random() * 900000).toString()
+
+    twoFACodes[username] = {
+        code: code,
+        expires: Date.now() + 3 * 60 * 1000
+    }
+
+    emailSystem.sendEmail(username, "Your 2FA Code", code)
+
+    res.render("2fa", { username })
+})
+
+app.post('/verify-2fa', (req, res) => {
+    const { username, code } = req.body
+
+    const record = twoFACodes[username]
+
+    if (!record) {
+        return res.send("No code found")
+    }
+
+    if (record.expires < Date.now()) {
+        delete twoFACodes[username]
+        return res.send("Code expired")
+    }
+
+    if (record.code !== code) {
+        return res.send("Invalid code")
+    }
+
+    delete twoFACodes[username]
+
     const sessionId = crypto.randomBytes(16).toString("hex")
 
     sessions[sessionId] = {
         username,
         expires: Date.now() + 5 * 60 * 1000
     }
-    res.cookie("sessionId", sessionId, {maxAge: 5 * 60 * 1000})
+
+    res.cookie("sessionId", sessionId, { maxAge: 5 * 60 * 1000 })
     res.redirect("/")
 })
 

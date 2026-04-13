@@ -45,8 +45,8 @@ async function run(){
     const shifts = db.collection("shifts");
     const assignments = db.collection("assignments");
     const employees = db.collection("employees");
-    //await addEmployeesArray(shifts);
-    //await embedEmployees(shifts, assignments, employees);
+    await addEmployeesArray(shifts);
+    await embedEmployees(shifts, assignments, employees);
     await cleanup(shifts, employees, db);
 }
 
