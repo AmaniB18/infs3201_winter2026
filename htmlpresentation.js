@@ -22,18 +22,32 @@ let loginAttempts = {}
 
 
 const multer = require('multer')
-const upload = multer({
-    dest: 'uploads/',
-    limits: { fileSize: 2 * 1024 * 1024 } 
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/')
+    },
+    filename: (req, file, cb) => {
+        const originalName = file.originalname
+        cb(null, Date.now()+ '_' + originalName)
+    }
 })
 
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 2 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === 'application/pdf') {
+            cb(null, true)
+        } else {
+            cb(new Error("Only PDF allowed"))
+        }
+    }
+})
 
 app.post('/employee/:id/upload', upload.single('doc'), async (req, res) => {
     if (!req.file) {
         return res.send("No file uploaded")
-    }
-    if (req.file.mimetype !== 'application/pdf') {
-        return res.send("Only PDF allowed")
     }
 
     const db = await require('./persistence.js').getDb()
@@ -238,11 +252,18 @@ app.get('/employee/:id', async (req, res) => {
     const emp = await business.findEmployee(req.params.id)
     const shifts = await business.getEmployeeShifts(req.params.id)
 
+    const db = await require('./persistence.js').getDb()
+
+    const docs = await db.collection('documents').find({
+        employeeId: new ObjectId(req.params.id)
+    }).toArray()
+
     shifts.sort((a,b) => new Date(a.date + ' ' + a.startTime) - new Date(b.date + ' ' + b.startTime))
 
     res.render('employee_details', {
         employee: emp,
-        shifts: shifts
+        shifts: shifts,
+        documents: docs 
     })
 })
 
@@ -290,5 +311,12 @@ app.set('view engine', 'handlebars')
 
 
 app.get('/', handleRoot)
+
+app.use((err, req, res, next) => {
+    if (err.message === "Only PDF allowed") {
+        return res.send("Only PDF allowed")
+    }
+    next(err)
+})
 
 app.listen(8000)

@@ -24,3 +24,15 @@
     <input type="file" name="doc" />
     <button type="submit">Upload</button>
 </form>
+
+<h2>Documents</h2>
+<ul>
+  {{#each documents}}
+    <li>
+      <a href="/documents/{{filename}}" target="_blank">
+        View Document
+      </a>
+    </li>
+  {{/each}}
+</ul>
+
