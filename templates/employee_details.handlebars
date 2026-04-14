@@ -18,3 +18,9 @@
 <style>
   .morning { background-color: yellow; }
 </style>
+
+<h2>Upload Document</h2>
+<form method="POST" action="/employee/{{employee._id}}/upload" enctype="multipart/form-data">
+    <input type="file" name="doc" />
+    <button type="submit">Upload</button>
+</form>

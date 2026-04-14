@@ -20,6 +20,40 @@ let sessions = {}
 let twoFACodes = {}
 let loginAttempts = {}
 
+
+const multer = require('multer')
+const upload = multer({
+    dest: 'uploads/',
+    limits: { fileSize: 2 * 1024 * 1024 } 
+})
+
+
+app.post('/employee/:id/upload', upload.single('doc'), async (req, res) => {
+    if (!req.file) {
+        return res.send("No file uploaded")
+    }
+    if (req.file.mimetype !== 'application/pdf') {
+        return res.send("Only PDF allowed")
+    }
+
+    const db = await require('./persistence.js').getDb()
+    const count = await db.collection('documents').countDocuments({
+        employeeId: new ObjectId(req.params.id)})
+
+    if (count >= 5) {
+        return res.send("Max 5 documents allowed")
+    }
+    await db.collection('documents').insertOne({
+        employeeId: new ObjectId(req.params.id),
+        filename: req.file.filename
+    })
+    res.redirect('/employee/' + req.params.id)
+})
+
+app.get('/documents/:filename', auth, (req, res) => {
+    res.sendFile(__dirname +'/uploads/'+ req.params.filename)
+})
+
 function hashPassword(password) {
     return crypto.createHash('sha256').update(password).digest('hex')
 }
